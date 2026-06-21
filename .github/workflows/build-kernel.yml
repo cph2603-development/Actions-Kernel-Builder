@@ -27,6 +27,14 @@ jobs:
         chmod +x build.sh
         ./build.sh
 
+    - name: Check if kernel image exists
+      run: |
+        if [ ! -f "kernel_cph2603_mt6877/kernel-4.19/out/arch/arm64/boot/Image.gz" ]; then
+        echo "Error: Image.gz not found! Build failed."
+        exit 1
+        fi
+        echo "Image.gz found, build successful."
+
     - name: Upload Kernel Artifact
       uses: actions/upload-artifact@v4
       with:
