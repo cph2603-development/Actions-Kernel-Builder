@@ -1,0 +1,35 @@
+name: Kernel Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: ubuntu:20.04
+
+    steps:
+    - name: Install System Dependencies
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update
+        apt-get install -y wget xz-utils make bc bison flex libssl-dev libelf-dev git libtinfo5 libncurses5 libxml2
+
+    - name: Clone kernel repo
+      run: |
+        git clone --depth 1 -b 14.0 https://github.com/cph2603-development/kernel_cph2603_mt6877.git
+
+    - name: Run Build Script
+      run: |
+        cd kernel_cph2603_mt6877/kernel-4.19/
+        chmod +x build.sh
+        ./build.sh
+
+    - name: Upload Kernel Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-kernel
+        path: kernel_cph2603_mt6877/kernel-4.19/out/arch/arm64/boot/Image.gz
+        retention-days: 7
